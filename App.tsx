@@ -25,11 +25,19 @@ const MainApp: React.FC = () => {
       campaign: params.get('utm_campaign') || undefined,
     });
 
-    // Handle initial route if needed
-    const hash = window.location.hash;
-    if (hash === '#/wizard') setView('wizard');
-    if (hash === '#/result' && leadData) setView('result');
-  }, []);
+    // Handle initial route based on hash
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#/' || hash === '') setView('landing');
+      if (hash === '#/wizard') setView('wizard');
+      if (hash === '#/result' && leadData) setView('result');
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+    
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [leadData]);
 
   const handleWizardComplete = (data: LeadData) => {
     const results = calculateScore(data);
@@ -49,6 +57,13 @@ const MainApp: React.FC = () => {
     window.location.hash = '/wizard';
   };
 
+  const handleReset = () => {
+    setLeadData(null);
+    setScoring(null);
+    setView('landing');
+    window.location.hash = '/';
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -57,11 +72,11 @@ const MainApp: React.FC = () => {
           <Route path="/" element={
             view === 'landing' ? <Landing onStart={startWizard} /> :
             view === 'wizard' ? <Wizard onComplete={handleWizardComplete} /> :
-            (leadData && scoring) ? <Result data={leadData} results={scoring} /> : <Landing onStart={startWizard} />
+            (leadData && scoring) ? <Result data={leadData} results={scoring} onReset={handleReset} /> : <Landing onStart={startWizard} />
           } />
           <Route path="/wizard" element={<Wizard onComplete={handleWizardComplete} />} />
           <Route path="/result" element={
-            (leadData && scoring) ? <Result data={leadData} results={scoring} /> : <Landing onStart={startWizard} />
+            (leadData && scoring) ? <Result data={leadData} results={scoring} onReset={handleReset} /> : <Landing onStart={startWizard} />
           } />
           <Route path="/privacy" element={<Privacy />} />
         </Routes>

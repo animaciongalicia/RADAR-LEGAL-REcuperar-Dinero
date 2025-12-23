@@ -7,9 +7,10 @@ import { generateRadarPDF } from '../utils/pdf';
 interface ResultProps {
   data: LeadData;
   results: ScoringResult;
+  onReset: () => void;
 }
 
-const Result: React.FC<ResultProps> = ({ data, results }) => {
+const Result: React.FC<ResultProps> = ({ data, results, onReset }) => {
   const handleDownload = async () => {
     const pdfBytes = await generateRadarPDF(data, results);
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -152,7 +153,7 @@ const Result: React.FC<ResultProps> = ({ data, results }) => {
           </div>
         </section>
 
-        {/* Sección 4: Auditoría Documental - REFINADA */}
+        {/* Sección 4: Auditoría Documental */}
         <section className="bg-slate-50 border border-slate-200 rounded-2xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
@@ -208,6 +209,14 @@ const Result: React.FC<ResultProps> = ({ data, results }) => {
               Cita Estratégica 15 min
             </a>
           </div>
+
+          <button 
+            onClick={onReset}
+            className="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest hover:text-slate-600 transition flex items-center justify-center gap-2"
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            Realizar otro diagnóstico
+          </button>
         </div>
 
         <div className="text-center pt-10 border-t border-slate-100">
